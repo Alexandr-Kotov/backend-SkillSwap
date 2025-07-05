@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Skill = require('../models/Skill');
 
 // 1 шаг регистрации — email + пароль
 exports.registerStep1 = async (req, res) => {
@@ -36,7 +37,7 @@ function calculateAge(birthDate) {
 // 2 шаг — заполнение данных профиля
 exports.registerStep2 = async (req, res) => {
   try {
-    const { userId, name, city, age, gender, about, photo, birthDate } = req.body;
+    const { userId, name, city, age, gender, about, photo, birthDate, wantsToLearn  } = req.body;
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ msg: 'User not found' });
@@ -56,9 +57,16 @@ exports.registerStep2 = async (req, res) => {
       user.age = calculateAge(user.birthDate);
     }
 
-    // Обновляем wantsToLearn, если он есть в запросе
-    if (wantsToLearn) {
-      user.wantsToLearn = wantsToLearn; // Ожидается массив объектов навыков
+
+    if (Array.isArray(wantsToLearn)) {
+      const skillIds = [];
+      for (const skill of wantsToLearn) {
+        const foundSkill = await Skill.findOne({ name: skill.name, categoryName: skill.categoryName });
+        if (foundSkill) {
+          skillIds.push(foundSkill._id);
+        }
+      }
+      user.wantsToLearn = skillIds;
     }
 
     await user.save();
@@ -72,7 +80,7 @@ exports.registerStep2 = async (req, res) => {
 // 3 шаг — добавление карточек
 exports.registerStep3AddCard = async (req, res) => {
   try {
-    const { userId, title, description, photo } = req.body;
+    const { userId, title, description, photo, canTeach  } = req.body;
 
     if (!title) return res.status(400).json({ msg: 'Card title required' });
 
@@ -80,12 +88,20 @@ exports.registerStep3AddCard = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     user.cards.push({ title, description, photo });
-    await user.save();
 
-    // Обновляем canTeach, если есть в запросе
-    if (canTeach) {
-      user.canTeach = canTeach; // массив объектов навыков
+    if (Array.isArray(canTeach)) {
+      const skillIds = [];
+      for (const skill of canTeach) {
+        const foundSkill = await Skill.findOne({ name: skill.name, categoryName: skill.categoryName });
+        if (foundSkill) {
+          skillIds.push(foundSkill._id);
+        }
+      }
+      user.canTeach = skillIds;
     }
+
+
+    await user.save();
 
 
     res.status(201).json({ msg: 'Card added', card: user.cards[user.cards.length - 1] });
