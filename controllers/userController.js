@@ -59,7 +59,7 @@ exports.registerStep2 = async (req, res) => {
 
 
     if (Array.isArray(wantsToLearn)) {
-      const skillIds = [];
+      const skillsFull = [];
       for (const skill of wantsToLearn) {
         const foundSkill = await Skill.findOne({ name: skill.name, categoryName: skill.categoryName });
         if (foundSkill) {
@@ -94,7 +94,7 @@ exports.registerStep3AddCard = async (req, res) => {
     user.cards.push({ title, description, photo });
 
     if (Array.isArray(canTeach)) {
-      const skillIds = [];
+      const skillsFull = [];
       for (const skill of canTeach) {
         const foundSkill = await Skill.findOne({ name: skill.name, categoryName: skill.categoryName });
         if (foundSkill) {
