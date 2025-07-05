@@ -21,6 +21,18 @@ exports.registerStep1 = async (req, res) => {
   }
 };
 
+// Функция для вычисления возраста
+function calculateAge(birthDate) {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 // 2 шаг — заполнение данных профиля
 exports.registerStep2 = async (req, res) => {
   try {
@@ -36,6 +48,13 @@ exports.registerStep2 = async (req, res) => {
     user.about = about || user.about;
     user.photo = photo || user.photo;
     user.birthDate = birthDate || user.birthDate;
+
+    if (birthDate) {
+      user.age = calculateAge(birthDate);
+    } else if (!user.age && user.birthDate) {
+      // Если age нет, но есть birthDate в базе — тоже вычислим
+      user.age = calculateAge(user.birthDate);
+    }
 
     await user.save();
 
