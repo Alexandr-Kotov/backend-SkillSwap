@@ -70,7 +70,7 @@ exports.registerStep2 = async (req, res) => {
           });
         }
       }
-      user.wantsToLearn = skillIds;
+      user.wantsToLearn = skillsFull;
     }
 
     await user.save();
@@ -105,7 +105,7 @@ exports.registerStep3AddCard = async (req, res) => {
           });
         }
       }
-      user.canTeach = skillIds;
+      user.canTeach = skillsFull;
     }
 
 
