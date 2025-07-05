@@ -56,6 +56,11 @@ exports.registerStep2 = async (req, res) => {
       user.age = calculateAge(user.birthDate);
     }
 
+    // Обновляем wantsToLearn, если он есть в запросе
+    if (wantsToLearn) {
+      user.wantsToLearn = wantsToLearn; // Ожидается массив объектов навыков
+    }
+
     await user.save();
 
     res.json({ msg: 'Step 2 complete. Profile updated' });
@@ -76,6 +81,12 @@ exports.registerStep3AddCard = async (req, res) => {
 
     user.cards.push({ title, description, photo });
     await user.save();
+
+    // Обновляем canTeach, если есть в запросе
+    if (canTeach) {
+      user.canTeach = canTeach; // массив объектов навыков
+    }
+
 
     res.status(201).json({ msg: 'Card added', card: user.cards[user.cards.length - 1] });
   } catch (err) {
