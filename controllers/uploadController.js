@@ -24,7 +24,7 @@ const handleUpload = (req, res) => {
     const urls = req.files.map(file => file.path); // Cloudinary URL
     res.status(200).json({ urls });
   } catch (err) {
-    console.error('Upload error:', err); // 👈 это важно!
+    console.error('Ошибка загрузки:', JSON.stringify(err, null, 2)); // <-- добавь это
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
