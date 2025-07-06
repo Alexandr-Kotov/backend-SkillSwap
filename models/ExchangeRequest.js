@@ -5,6 +5,7 @@ const ExchangeRequestSchema = new mongoose.Schema({
   to: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   offerDetails: String, // или массив умений
   status: { type: String, default: 'pending' }, // pending, accepted, rejected
+   isNew: { type: Boolean, default: true }, // уведомление
   date: { type: Date, default: Date.now }
 });
 

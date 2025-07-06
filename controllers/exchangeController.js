@@ -23,3 +23,29 @@ exports.sendRequest = async (req, res) => {
   await newReq.save();
   res.status(201).json({ msg: 'Обмен отправлен' });
 };
+
+exports.getNewRequests = async (req, res) => {
+  try {
+    const newRequests = await ExchangeRequest.find({
+      to: req.user,
+      isNew: true
+    }).populate('from', 'name');
+
+    res.json(newRequests);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.markRequestsAsRead = async (req, res) => {
+  try {
+    await ExchangeRequest.updateMany(
+      { to: req.user, isNew: true },
+      { $set: { isNew: false } }
+    );
+    res.json({ msg: 'Уведомления прочитаны' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
