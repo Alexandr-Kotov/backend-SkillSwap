@@ -3,6 +3,6 @@ const router = express.Router();
 const { upload, handleUpload } = require('../controllers/uploadController');
 
 // Загрузка нескольких фото (до 6)
-router.post('/upload', upload.array('photos', 6), handleUpload);
+router.post('/', upload.array('photos', 6), handleUpload);
 
 module.exports = router;

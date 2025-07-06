@@ -16,12 +16,17 @@ const upload = multer({ storage });
 
 // Контроллер обработки загрузки
 const handleUpload = (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({ error: 'No files uploaded' });
-  }
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
 
-  const urls = req.files.map(file => file.path); // Cloudinary URL
-  res.status(200).json({ urls });
+    const urls = req.files.map(file => file.path);
+    res.status(200).json({ urls });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 module.exports = { upload, handleUpload };
