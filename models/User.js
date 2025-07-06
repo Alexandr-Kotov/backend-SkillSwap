@@ -9,7 +9,7 @@ const SkillSchema = new mongoose.Schema({
 const CardSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
-  photo: String,
+  photo: [String],
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
   age: { type: Number },
   gender: { type: String },
   about: { type: String },
-  photo: [{ type: String }],
+  photo: { type: String },
   birthDate: { type: Date },
   registerDate: { type: Date, default: Date.now },
 
