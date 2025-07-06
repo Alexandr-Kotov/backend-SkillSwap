@@ -21,11 +21,11 @@ const handleUpload = (req, res) => {
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const urls = req.files.map(file => file.path);
+    const urls = req.files.map(file => file.path); // Cloudinary URL
     res.status(200).json({ urls });
   } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('Upload error:', err); // 👈 это важно!
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
