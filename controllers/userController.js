@@ -186,3 +186,53 @@ exports.unlikeUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+// Получить все карточки всех пользователей
+exports.getAllCards = async (req, res) => {
+  try {
+    // Получаем пользователей, у которых есть хотя бы одна карточка
+    const usersWithCards = await User.find({ 'cards.0': { $exists: true } }).select('cards name photo');
+
+    // Собираем все карточки в один массив
+    const allCards = usersWithCards.flatMap(user =>
+      user.cards.map(card => ({
+        ...card.toObject(),
+        ownerId: user._id,
+        ownerName: user.name,
+        ownerPhoto: user.photo
+      }))
+    );
+
+    res.json(allCards);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+// Получить одну карточку по ID
+exports.getCardById = async (req, res) => {
+  try {
+    const { cardId } = req.params;
+
+    // Находим пользователя, у которого есть эта карточка
+    const user = await User.findOne({ 'cards._id': cardId }).select('cards name photo');
+
+    if (!user) return res.status(404).json({ msg: 'Карточка не найдена' });
+
+    // Ищем саму карточку внутри массива
+    const card = user.cards.id(cardId);
+
+    if (!card) return res.status(404).json({ msg: 'Карточка не найдена' });
+
+    res.json({
+      ...card.toObject(),
+      ownerId: user._id,
+      ownerName: user.name,
+      ownerPhoto: user.photo
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

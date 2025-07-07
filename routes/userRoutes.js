@@ -23,4 +23,10 @@ router.get('/:id',  userController.getUserById);
 router.post('/:id/like', auth, userController.likeUser);
 router.delete('/:id/like', auth, userController.unlikeUser);
 
+// Получить все карточки всех пользователей
+router.get('/cards/all', userController.getAllCards);
+// Получить одну карточку по ID
+router.get('/cards/:cardId', userController.getCardById);
+
+
 module.exports = router;
